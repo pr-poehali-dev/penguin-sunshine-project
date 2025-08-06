@@ -3,7 +3,7 @@ import { useState } from 'react';
 const Index = () => {
   const [currentView, setCurrentView] = useState<'home' | 'penguin' | 'clouds'>('home');
   const [penguinMessage, setPenguinMessage] = useState('');
-  const [clouds, setClouds] = useState(() => Array.from({ length: 7 }, (_, i) => ({ id: i, isCandy: false })));
+  const [clouds, setClouds] = useState(() => Array.from({ length: 7 }, (_, i) => ({ id: i, isCandy: false, position: i })));
 
   const motivationalMessages = [
     "все будет хорошо!",
@@ -42,37 +42,25 @@ const Index = () => {
       )
     );
     
-    // Удаляем тучку и создаем новую через секунду
+    // Через 2 секунды возвращаем тучку обратно
     setTimeout(() => {
-      setClouds(prevClouds => {
-        const filteredClouds = prevClouds.filter(cloud => cloud.id !== cloudId);
-        const newCloud = { id: Date.now(), isCandy: false };
-        return [...filteredClouds, newCloud];
-      });
-    }, 1000);
+      setClouds(prevClouds =>
+        prevClouds.map(cloud =>
+          cloud.id === cloudId ? { ...cloud, isCandy: false } : cloud
+        )
+      );
+    }, 2000);
   };
 
   const StarryBackground = () => (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900"
+        className="absolute inset-0"
         style={{
-          backgroundImage: `
-            radial-gradient(2px 2px at 20px 30px, #FFD700, transparent),
-            radial-gradient(2px 2px at 40px 70px, #FFD700, transparent),
-            radial-gradient(1px 1px at 90px 40px, #FFD700, transparent),
-            radial-gradient(1px 1px at 130px 80px, #FFD700, transparent),
-            radial-gradient(2px 2px at 160px 30px, #FFD700, transparent),
-            radial-gradient(1px 1px at 190px 90px, #FFD700, transparent),
-            radial-gradient(1px 1px at 230px 20px, #FFD700, transparent),
-            radial-gradient(2px 2px at 270px 60px, #FFD700, transparent),
-            radial-gradient(1px 1px at 320px 100px, #FFD700, transparent),
-            radial-gradient(1px 1px at 350px 40px, #FFD700, transparent),
-            radial-gradient(2px 2px at 380px 80px, #FFD700, transparent),
-            radial-gradient(1px 1px at 420px 20px, #FFD700, transparent)
-          `,
-          backgroundSize: '200px 120px',
-          backgroundRepeat: 'repeat'
+          backgroundImage: `url('https://cdn.poehali.dev/files/b52ecd6a-33fd-4cab-99aa-5b27271db61b.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       />
     </div>
@@ -95,26 +83,24 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row gap-8">
             <button
               onClick={() => setCurrentView('penguin')}
-              className="group relative px-12 py-6 text-2xl font-semibold text-white border-2 border-yellow-300 rounded-2xl 
-                       bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-20 
+              className="px-12 py-6 text-2xl font-semibold text-blue-900 
+                       bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl border-3 border-yellow-500
+                       hover:from-yellow-300 hover:to-yellow-200 
                        transition-all duration-300 transform hover:scale-105 hover:shadow-2xl
-                       font-['Open_Sans']"
+                       font-['Open_Sans'] shadow-lg"
             >
-              <span className="relative z-10">🐧 Пингви</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 
-                            group-hover:opacity-20 rounded-2xl transition-opacity duration-300"></div>
+              🐧 Пингви
             </button>
             
             <button
               onClick={() => setCurrentView('clouds')}
-              className="group relative px-12 py-6 text-2xl font-semibold text-white border-2 border-yellow-300 rounded-2xl 
-                       bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-20 
+              className="px-12 py-6 text-2xl font-semibold text-blue-900 
+                       bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl border-3 border-yellow-500
+                       hover:from-yellow-300 hover:to-yellow-200 
                        transition-all duration-300 transform hover:scale-105 hover:shadow-2xl
-                       font-['Open_Sans']"
+                       font-['Open_Sans'] shadow-lg"
             >
-              <span className="relative z-10">☁️ Тучки</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 
-                            group-hover:opacity-20 rounded-2xl transition-opacity duration-300"></div>
+              ☁️ Тучки
             </button>
           </div>
         </div>
@@ -129,8 +115,9 @@ const Index = () => {
         <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
           <button
             onClick={() => setCurrentView('home')}
-            className="absolute top-6 left-6 px-6 py-3 text-white border border-yellow-300 rounded-lg 
-                     bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-20 transition-all duration-300"
+            className="absolute top-6 left-6 px-6 py-3 text-blue-900 font-semibold
+                     bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-lg 
+                     hover:from-yellow-300 hover:to-yellow-200 transition-all duration-300 shadow-lg"
           >
             ← Назад
           </button>
@@ -152,9 +139,9 @@ const Index = () => {
             </div>
             
             {penguinMessage && (
-              <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-6 border border-yellow-300
-                            animate-pulse max-w-md text-center">
-                <p className="text-2xl text-white font-semibold font-['Open_Sans']">
+              <div className="bg-white bg-opacity-90 backdrop-blur-lg rounded-2xl p-6 border-2 border-yellow-400
+                            animate-pulse max-w-md text-center shadow-2xl">
+                <p className="text-2xl text-blue-900 font-semibold font-['Open_Sans']">
                   {penguinMessage}
                 </p>
               </div>
@@ -172,8 +159,9 @@ const Index = () => {
         <div className="relative z-10 min-h-screen p-8">
           <button
             onClick={() => setCurrentView('home')}
-            className="absolute top-6 left-6 px-6 py-3 text-white border border-yellow-300 rounded-lg 
-                     bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-20 transition-all duration-300 z-20"
+            className="absolute top-6 left-6 px-6 py-3 text-blue-900 font-semibold
+                     bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-lg 
+                     hover:from-yellow-300 hover:to-yellow-200 transition-all duration-300 shadow-lg z-20"
           >
             ← Назад
           </button>
@@ -183,13 +171,8 @@ const Index = () => {
               <div
                 key={cloud.id}
                 onClick={() => !cloud.isCandy && handleCloudClick(cloud.id)}
-                className={`text-6xl cursor-pointer transition-all duration-500 select-none
-                          ${cloud.isCandy ? 'animate-spin' : 'hover:scale-125 animate-pulse'}
-                          ${cloud.isCandy ? 'opacity-0' : 'opacity-100'}`}
-                style={{
-                  animationDelay: `${Math.random() * 2}s`,
-                  transform: cloud.isCandy ? 'scale(0)' : 'scale(1)'
-                }}
+                className="text-6xl cursor-pointer transition-all duration-300 select-none
+                          hover:scale-125 filter drop-shadow-lg"
               >
                 {cloud.isCandy ? '🍬' : '☁️'}
               </div>
@@ -197,9 +180,11 @@ const Index = () => {
           </div>
           
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-            <p className="text-white text-lg font-['Open_Sans']">
-              Кликай на тучки, чтобы превратить их в конфетки! 🍬
-            </p>
+            <div className="bg-white bg-opacity-90 rounded-xl p-4 shadow-lg">
+              <p className="text-blue-900 text-lg font-semibold font-['Open_Sans']">
+                Кликай на тучки, чтобы превратить их в конфетки! 🍬
+              </p>
+            </div>
           </div>
         </div>
       </div>
